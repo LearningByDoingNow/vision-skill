@@ -1,0 +1,6 @@
+{
+  "env": {
+    "ZHIPU_API_KEY": "",
+    "VISION_MODEL": "glm-4.6v"
+  }
+}
