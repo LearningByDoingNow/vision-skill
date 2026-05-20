@@ -1,0 +1,19 @@
+# ==============================================================================
+# vision skill 依赖 — 一键安装: pip install -r requirements.txt
+# ==============================================================================
+
+# ----- 多模态 API 厂商 (按需安装，使用哪个厂商就装哪个) -----
+zai              # 智谱 GLM (glm-4.6v)
+openai           # OpenAI (gpt-4o)
+anthropic        # Anthropic (claude-sonnet-4-6)
+google-genai     # Google (gemini-2.5-flash)
+
+# ----- 远程 URL 下载 -----
+requests         # Anthropic/Google 处理远程图片时需要
+
+# ----- 图片处理 (OCR 兜底 + Google 图片加载) -----
+Pillow
+
+# ----- OCR 文字提取 (无 API key 时的兜底，顺序: easyocr → pytesseract) -----
+easyocr          # 离线 OCR，中英文，首次运行自动下载模型 ~200MB
+pytesseract      # 可选：需系统安装 tesseract，macOS: brew install tesseract
