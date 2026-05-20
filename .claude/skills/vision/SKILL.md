@@ -53,7 +53,7 @@ fi
 - 视频无 API key → 提示用户配置（视频无法 OCR）
 - 支持同时传入多个文件，逐个描述
 - TUI 粘贴的临时图片无扩展名也能识别（文件头魔数检测）
-- API 超时默认 60s（保护上限，非固定延迟），可通过 `VISION_TIMEOUT=90` 自定义
+- API 超时默认 90s（保护上限，非固定延迟），可通过 `VISION_TIMEOUT=120` 自定义
 
 参数：
 - 指定厂商：`--provider openai`（可选：zhipu/openai/anthropic/google）

@@ -31,10 +31,10 @@ from typing import Optional
 # 全局配置
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# API 超时上限（秒）。多模态 API 通常在 10-30 秒内响应，60s 是安全上限。
-# 可通过 VISION_TIMEOUT 环境变量自定义，例如 VISION_TIMEOUT=90。
-# 注意：这是等待上限，非固定延迟——API 在 5s 返回则 5s 就继续，不会空等。
-_API_TIMEOUT = int(os.environ.get("VISION_TIMEOUT", "60"))
+# API 超时上限（秒）。多模态视觉 API 通常 20-60s 响应，大图可能更久，90s 兼顾安全与容错。
+# 可通过 VISION_TIMEOUT 环境变量自定义，例如 VISION_TIMEOUT=120。
+# 注意：这是等待上限，非固定延迟——API 在 10s 返回则 10s 就继续，不会空等。
+_API_TIMEOUT = int(os.environ.get("VISION_TIMEOUT", "90"))
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

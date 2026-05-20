@@ -136,7 +136,7 @@ export GOOGLE_API_KEY="your-key"    # Google Gemini
 
 ```bash
 export VISION_MODEL="gpt-4o-mini"   # 覆盖厂商默认模型
-export VISION_TIMEOUT="90"          # API 超时上限(秒)，默认 60s
+export VISION_TIMEOUT="90"          # API 超时上限(秒)，默认 90s
 ```
 > `VISION_TIMEOUT` 是**保护上限**而非固定延迟——API 在 5s 内返回则 5s 就继续执行，不会空等到超时。
 
