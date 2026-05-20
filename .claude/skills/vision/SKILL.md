@@ -39,6 +39,16 @@ if [ -n "$VISION_MODEL" ]; then
 fi
 ```
 
+## 环境准备
+
+若项目根目录没有 `.venv/`，先引导用户运行安装脚本：
+
+```bash
+bash install.sh
+```
+
+（等同于 `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`）
+
 ## 执行命令
 
 ```bash

@@ -59,8 +59,9 @@
 ## Quick Start
 
 ```bash
-# 1. Install dependencies
-pip install -r .claude/skills/vision/auto_config/requirements.txt
+# 1. Install dependencies (one-click script)
+bash install.sh
+# Or manually: pip install -r requirements.txt
 
 # 2. Configure at least one API key
 export ZHIPU_API_KEY="your-key-here"
@@ -78,7 +79,13 @@ export ZHIPU_API_KEY="your-key-here"
 ### One-Line Install
 
 ```bash
-pip install -r .claude/skills/vision/auto_config/requirements.txt
+bash install.sh
+```
+
+Or directly with pip:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ### Per-Provider Install

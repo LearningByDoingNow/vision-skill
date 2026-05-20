@@ -59,8 +59,9 @@
 ## 快速开始
 
 ```bash
-# 1. 安装依赖
-pip install -r .claude/skills/vision/auto_config/requirements.txt
+# 1. 安装依赖（一键脚本）
+bash install.sh
+# 或手动：pip install -r requirements.txt
 
 # 2. 配置任意一个 API key
 export ZHIPU_API_KEY="your-key-here"
@@ -78,7 +79,13 @@ export ZHIPU_API_KEY="your-key-here"
 ### 一键安装
 
 ```bash
-pip install -r .claude/skills/vision/auto_config/requirements.txt
+bash install.sh
+```
+
+或直接使用 pip：
+
+```bash
+pip install -r requirements.txt
 ```
 
 ### 按需安装
