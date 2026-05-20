@@ -3,6 +3,10 @@
   <p align="center"><strong>多厂商多模态图片/视频描述 · 零配置 OCR 兜底 · 纯文本模型视觉桥梁</strong></p>
 </p>
 
+<p align="center">
+  <b>中文</b> | <a href="README_EN.md">English</a>
+</p>
+
 ---
 
 ## 目录
