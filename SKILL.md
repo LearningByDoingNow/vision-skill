@@ -1,114 +1,34 @@
 ---
 name: vision-skill
-description: 多厂商多模态图片/视频描述，无 API key 时自动 OCR 兜底。让纯文本模型理解视觉内容。
+description: >
+  多厂商多模态图片/视频描述，无 API key 时自动 OCR 兜底，让纯文本模型理解视觉内容。
+  Multi-provider multimodal image & video description with zero-config OCR fallback.
+  MUST trigger when a user attaches images (png/jpg/gif/webp/bmp), videos (mp4/avi/mov/mkv/webm),
+  image/video URLs, types /vision, or when [Image #N] / [Video #N] appears in the chat.
+  Do NOT try to Read image files directly — you cannot parse binary data. Run the vision
+  script instead. Cross-platform: works on Claude Code, OpenAI Codex, OpenCode, and OpenClaw.
 when_to_use: 用户附带图片(png/jpg/gif/webp/bmp)、视频(mp4/avi/mov/mkv/webm)、图片/视频URL、要求描述图片/截图/照片/视频、输入 /vision、消息中出现 [Image # 或 [Video #
-allowed-tools: Bash(python3 *)
+allowed-tools: Bash(python *)
 ---
 
 ## ⚠️ 强制规则
 
-**对话中出现 `[Image #N]` 或 `[Video #N]` 时，必须先执行下方的 Shell 命令获取媒体描述，然后再回答问题。绝不跳过脚本直接回复。**
-
-你无法直接查看图片或视频。这些 `[Image #N]` / `[Video #N]` 是你仅有的视觉入口——你没有绕过它们的任何能力。
-
-## 输入来源
-
-| 输入方式 | 触发场景 |
-|----------|----------|
-| TUI 粘贴/拖入图片 | 对话中出现 `[Image #N]`，脚本参数为该临时文件路径 |
-| 本地图片/视频文件 | `/vision photo.jpg` 或 `/vision video.mp4` |
-| 远程 URL | `/vision https://example.com/photo.jpg` |
-| 多个文件 | `/vision img1.jpg img2.png` |
-| stdin 管道 | `/vision` 配合管道输入 |
-
-> 即使文件无扩展名（TUI 临时文件），脚本也通过文件头魔数自动识别图片/视频类型。
-
-## API 状态检测
-
-```!
-echo "=== 多模态 API 配置状态 ==="
-for var in ZHIPU_API_KEY OPENAI_API_KEY ANTHROPIC_API_KEY GOOGLE_API_KEY; do
-  if [ -n "${(P)var}" ]; then
-    echo "$var: 已配置 ✓"
-  else
-    echo "$var: 未配置 ✗"
-  fi
-done
-if [ -n "$VISION_MODEL" ]; then
-  echo "VISION_MODEL: $VISION_MODEL (覆盖厂商默认模型)"
-fi
-```
-
-## 环境准备
-
-确保 Python 3.10+ 可用，且已安装所需依赖：
-
-```bash
-pip install -r ${CLAUDE_SKILL_DIR}/auto_config/requirements.txt
-```
-
-也可以参考 `install.sh` 一键完成。
+**对话中出现 `[Image #N]` 或 `[Video #N]` 时，立即停止一切操作，直接运行脚本获取媒体描述。禁止在此之前调用 Read 或其他工具去读取文件——你无法解析二进制图片/视频数据，脚本是你唯一的视觉入口。**
 
 ## 执行命令
 
-```bash
-python3 ${CLAUDE_SKILL_DIR}/scripts/vision_describe.py $ARGUMENTS
-```
+先确认 Python 可用（`python3` 或 `python`），然后运行 `${CLAUDE_SKILL_DIR}/scripts/vision_describe.py`，传入用户文件路径或 URL 作为参数。
 
-行为：
-- 自动检测第一个已配置 API key 的厂商，使用其默认模型
-- 若设置了 `VISION_MODEL` 环境变量，则覆盖厂商默认模型
-- 模型优先级：`--model 参数` > `VISION_MODEL 环境变量` > 厂商默认值
-- 图片无 API key → 自动 OCR 兜底（easyocr > pytesseract > 基础图像信息）
-- 视频无 API key → 提示用户配置（视频无法 OCR）
-- 支持同时传入多个文件，逐个描述
-- TUI 粘贴的临时图片无扩展名也能识别（文件头魔数检测）
-- API 超时默认 90s（保护上限，非固定延迟），可通过 `VISION_TIMEOUT=120` 自定义
+参数：`--provider openai` | `--model gpt-4o-mini` | `--prompt "重点关注文字"` | `--max-frames 10` | `--list-providers` | stdin 用 `-`
+行为：自动检测已配置 API key 的厂商 → 调用视觉模型 → 输出描述。无 key 时图片自动 OCR 兜底，视频则提示配置。
+超时：默认 90s，可通过 `VISION_TIMEOUT=120` 环境变量调整。
 
-参数：
-- 指定厂商：`--provider openai`（可选：zhipu/openai/anthropic/google）
-- 指定模型：`--model gpt-4o-mini`（也可设置 VISION_MODEL 环境变量）
-- 自定义描述要求：`--prompt "重点关注文字内容"`
-- 视频更多帧：`--max-frames 10`（默认 6）
-- 查看所有厂商状态：`--list-providers`
-- 从标准输入读取：使用 `-` 作为文件参数
+## 无 API key 时引导
 
-## 输出处理
+所有厂商均未配置时，主动提示用户（三种方式任选）：
 
-- 脚本输出是你理解媒体内容的唯一依据
-- 基于描述回答用户问题，不超出描述范围补充不存在的内容
-- 脚本执行失败时如实报告错误
-- OCR 兜底结果：告知用户仅提取了文字，建议配置 API key
+1. `export ZHIPU_API_KEY="xxx"` 临时生效
+2. 写入 `.claude/settings.local.json` → `{ "env": { "ZHIPU_API_KEY": "xxx" } }`
+3. 写入 `~/.claude/settings.json` 全局生效
 
-## 引导用户配置
-
-若环境检测显示所有 API key 均为"未配置"，主动提示：
-1. 当前只能使用 OCR 提取图片文字，无法理解场景/物体/人物/色彩等
-2. 配置任一 API key 即可获得完整的视觉理解能力，三种方式任选：
-
-**方式一：环境变量（临时生效，终端关闭即失效）**
-```
-export ZHIPU_API_KEY="your-key"     # 智谱 GLM (glm-4.6v)
-export OPENAI_API_KEY="your-key"    # OpenAI GPT-4o
-export ANTHROPIC_API_KEY="your-key" # Anthropic Claude
-export GOOGLE_API_KEY="your-key"    # Google Gemini
-export VISION_MODEL="gpt-4o-mini"   # （可选）覆盖默认模型
-```
-
-**方式二：项目级 settings（仅当前项目生效，可提交到团队共享）**
-写入项目 `.claude/settings.local.json` 的 `env` 字段（此文件已在 `.gitignore`，不会提交）：
-```json
-{ "env": { "ZHIPU_API_KEY": "your-key", "VISION_MODEL": "glm-4.6v" } }
-```
-
-**方式三：全局 settings（所有项目生效）**
-写入 `~/.claude/settings.json` 的 `env` 字段，格式同方式二。
-
-3. 一键安装依赖：`pip install -r ${CLAUDE_SKILL_DIR}/auto_config/requirements.txt`
-
-## 约束
-
-- **对话中有 `[Image #N]` 或 `[Video #N]` 必须先跑脚本**，不跑脚本就回复 = 违规
-- API key 缺失时主动降级 OCR，告知局限性，引导配置
-- 默认返回中文描述；需其他语言通过 `--prompt` 指定
-- 视频本地文件依赖 ffmpeg，未安装则告知用户
+脚本输出是你理解媒体内容的唯一依据，描述之外不编造内容。OCR 结果需告知用户仅提取了文字。
