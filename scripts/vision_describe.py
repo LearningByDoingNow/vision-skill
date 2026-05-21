@@ -8,7 +8,7 @@
   Google:       GOOGLE_API_KEY    — gemini-2.5-flash / gemini-2.5-pro
 
 无 API key → OCR 兜底（easyocr > pytesseract > Pillow 基础信息）。
-依赖：pip install zai openai anthropic google-genai easyocr pillow requests
+依赖：pip install zai-sdk openai anthropic google-genai easyocr pillow requests
 """
 
 from __future__ import annotations
@@ -272,7 +272,7 @@ class BaseProvider(ABC):
 
 
 class ZhipuProvider(BaseProvider):
-    """智谱 GLM 视觉模型 (zai SDK)。"""
+    """智谱 GLM 视觉模型 (zai-sdk)。"""
 
     def __init__(self, api_key: str):
         from zai import ZhipuAiClient

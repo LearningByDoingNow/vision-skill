@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">🔭 vision</h1>
+  <h1 align="center">🔭 vision-skill</h1>
   <p align="center"><strong>多厂商多模态图片/视频描述 · 零配置 OCR 兜底 · 纯文本模型视觉桥梁</strong></p>
 </p>
 
@@ -27,7 +27,7 @@
 
 ## 概述
 
-`vision` 是一个 Claude Code 技能（skill），让**纯文本模型**也能理解图片和视频的内容。它连接多个厂商的视觉大模型，自动检测可用 API，在完全没有 API key 时降级到 OCR 文字提取。
+`vision-skill` 是一个 Claude Code 技能（skill），让**纯文本模型**也能理解图片和视频的内容。它连接多个厂商的视觉大模型，自动检测可用 API，在完全没有 API key 时降级到 OCR 文字提取。
 
 > **适用场景**：本 skill 为 **DeepSeek V4 Pro 等纯文本主模型**设计。如果你使用的主模型本身就具备多模态视觉能力（如 Claude Opus、GPT-4o 等），它可以直接查看图片，此时 vision skill 会**冗余执行**——主模型能看到原图，skill 还会额外调用一次视觉 API 生成文字描述，浪费一次调用和延迟。建议在纯文本模型下启用，在多模态模型下移除或禁用该 skill。
 
@@ -62,7 +62,7 @@
 
 | 事项 | 选项 |
 |------|------|
-| **安装位置** | ① 项目级（`.claude/skills/vision`） ② 全局（`~/.claude/skills/vision`） |
+| **安装位置** | ① 项目级（`.claude/skills/vision-skill`） ② 全局（`~/.claude/skills/vision-skill`） |
 | **依赖安装** | ① `bash install.sh`（自动检测 pip/uv） ② 手动 `pip install -r auto_config/requirements.txt` ③ 按需只装一个厂商的 SDK |
 | **API key** | ① 环境变量 `export`（临时） ② 项目级 `settings.local.json`（推荐） ③ 全局 `~/.claude/settings.json` |
 
@@ -76,8 +76,8 @@
 
 ```bash
 # 1. 克隆到项目或全局
-git clone https://github.com/<user>/vision-skill.git .claude/skills/vision   # 项目级
-git clone https://github.com/<user>/vision-skill.git ~/.claude/skills/vision  # 全局
+git clone https://github.com/<user>/vision-skill.git .claude/skills/vision-skill-skill   # 项目级
+git clone https://github.com/<user>/vision-skill.git ~/.claude/skills/vision-skill  # 全局
 
 # 2. 安装依赖
 pip install -r auto_config/requirements.txt
@@ -98,7 +98,7 @@ export ZHIPU_API_KEY="your-key-here"
 
 ```powershell
 # 1. 克隆到项目或全局
-git clone https://github.com/<user>/vision-skill.git .claude/skills/vision
+git clone https://github.com/<user>/vision-skill.git .claude/skills/vision-skill
 
 # 2. 安装 Python 依赖（PowerShell / CMD 均可）
 pip install -r auto_config/requirements.txt
@@ -133,7 +133,7 @@ pip install -r auto_config/requirements.txt
 
 ```bash
 # 智谱
-pip install zai
+pip install zai-sdk
 
 # OpenAI
 pip install openai
@@ -237,8 +237,7 @@ python3 scripts/vision_describe.py video.mp4 \
   --max-frames 10
 
 # 管道输入（stdin）
-cat screenshot.png | .venv/bin/python \
-  .claude/skills/vision/scripts/vision_describe.py -
+cat screenshot.png | python3 scripts/vision_describe.py -
 
 # 远程 URL
 python3 scripts/vision_describe.py \
@@ -264,7 +263,7 @@ vision_describe.py
 │   └─ _guess_mime()              ← 扩展名兜底
 │
 ├─ Provider Registry         ← 厂商注册表（可扩展）
-│   ├─ ZhipuProvider         ← zai SDK
+│   ├─ ZhipuProvider         ← zai-sdk SDK
 │   ├─ OpenAIProvider        ← openai SDK
 │   ├─ AnthropicProvider     ← anthropic SDK
 │   └─ GoogleProvider        ← google-genai SDK
@@ -421,7 +420,7 @@ PROVIDER_REGISTRY: list[tuple[ProviderInfo, type[BaseProvider]]] = [
 
 你需要根据 SDK 的要求将图片传给 API：
 
-- **接受 URL 的 SDK**（如 zai、openai）：直接传入 URL
+- **接受 URL 的 SDK**（如 zai-sdk、openai）：直接传入 URL
 - **接受 base64 的 SDK**（如 anthropic）：解析 `data:` URL 或下载远程 URL 后 base64 编码
 - **接受 PIL Image 的 SDK**（如 google-genai）：加载为 PIL Image 对象
 

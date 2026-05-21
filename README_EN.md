@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">🔭 vision</h1>
+  <h1 align="center">🔭 vision-skill</h1>
   <p align="center"><strong>Multi-Provider Multimodal Image & Video Description · Zero-Config OCR Fallback · Visual Bridge for Text-Only LLMs</strong></p>
 </p>
 
@@ -27,7 +27,7 @@
 
 ## Overview
 
-`vision` is a Claude Code skill that enables **text-only LLMs** to understand images and videos. It bridges multiple vision model providers, auto-detects available API keys, and gracefully falls back to OCR text extraction when no API key is configured.
+`vision-skill` is a Claude Code skill that enables **text-only LLMs** to understand images and videos. It bridges multiple vision model providers, auto-detects available API keys, and gracefully falls back to OCR text extraction when no API key is configured.
 
 > **Target Audience**: This skill is designed for **text-only main models like DeepSeek V4 Pro**. If your main model already has native multimodal vision (e.g., Claude Opus, GPT-4o), it can see images directly — the vision skill will execute redundantly, wasting an extra vision API call and adding latency. Use this skill with text-only models; disable it with multimodal ones.
 
@@ -62,7 +62,7 @@ Before you start, here are the three things you need to decide:
 
 | Task | Options |
 |------|--------|
-| **Install location** | ① Project-level (`.claude/skills/vision`) ② Global (`~/.claude/skills/vision`) |
+| **Install location** | ① Project-level (`.claude/skills/vision-skill`) ② Global (`~/.claude/skills/vision-skill`) |
 | **Dependencies** | ① `bash install.sh` (auto-detects pip/uv) ② Manual `pip install -r auto_config/requirements.txt` ③ Single-provider SDK only |
 | **API key** | ① Env var `export` (temporary) ② Project `settings.local.json` (recommended) ③ Global `~/.claude/settings.json` |
 
@@ -76,8 +76,8 @@ Before you start, here are the three things you need to decide:
 
 ```bash
 # 1. Clone to project or globally
-git clone https://github.com/<user>/vision-skill.git .claude/skills/vision   # project-level
-git clone https://github.com/<user>/vision-skill.git ~/.claude/skills/vision  # global
+git clone https://github.com/<user>/vision-skill.git .claude/skills/vision-skill-skill   # project-level
+git clone https://github.com/<user>/vision-skill.git ~/.claude/skills/vision-skill  # global
 
 # 2. Install dependencies
 pip install -r auto_config/requirements.txt
@@ -98,7 +98,7 @@ export ZHIPU_API_KEY="your-key-here"
 
 ```powershell
 # 1. Clone to project or globally
-git clone https://github.com/<user>/vision-skill.git .claude/skills/vision
+git clone https://github.com/<user>/vision-skill.git .claude/skills/vision-skill
 
 # 2. Install Python dependencies (PowerShell / CMD)
 pip install -r auto_config/requirements.txt
@@ -133,7 +133,7 @@ If you only use a single provider, install only that SDK:
 
 ```bash
 # Zhipu
-pip install zai
+pip install zai-sdk
 
 # OpenAI
 pip install openai
@@ -238,7 +238,7 @@ python3 scripts/vision_describe.py video.mp4 \
 
 # Stdin pipe input
 cat screenshot.png | .venv/bin/python \
-  .claude/skills/vision/scripts/vision_describe.py -
+  python3 scripts/vision_describe.py -
 
 # Remote URL
 python3 scripts/vision_describe.py \
@@ -264,7 +264,7 @@ vision_describe.py
 │   └─ _guess_mime()              ← Extension-based fallback
 │
 ├─ Provider Registry         ← Pluggable provider registry
-│   ├─ ZhipuProvider         ← zai SDK
+│   ├─ ZhipuProvider         ← zai-sdk SDK
 │   ├─ OpenAIProvider        ← openai SDK
 │   ├─ AnthropicProvider     ← anthropic SDK
 │   └─ GoogleProvider        ← google-genai SDK
@@ -420,7 +420,7 @@ In your `describe_image` method, `image_url` may be:
 
 Pass images to the API according to your SDK's requirements:
 
-- **URL-accepting SDKs** (e.g., zai, openai): pass URL directly
+- **URL-accepting SDKs** (e.g., zai-sdk, openai): pass URL directly
 - **Base64-accepting SDKs** (e.g., anthropic): parse `data:` URL or download + base64-encode
 - **PIL Image-accepting SDKs** (e.g., google-genai): load as PIL Image object
 
