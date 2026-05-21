@@ -75,6 +75,8 @@
 ### macOS / Linux
 
 ```bash
+# 前置要求: Python >= 3.10（zai-sdk 在该版本以下缺乏 __init__.py，详见常见问题）
+
 # 1. 克隆到项目或全局
 git clone https://github.com/<user>/vision-skill.git .claude/skills/vision-skill-skill   # 项目级
 git clone https://github.com/<user>/vision-skill.git ~/.claude/skills/vision-skill  # 全局
@@ -452,6 +454,10 @@ export VISION_MODEL="gpt-4o-mini"
 ---
 
 ## 常见问题
+
+### 为什么要求 Python >= 3.10？
+
+`zai-sdk`（智谱官方 SDK）在打包时，Python 3.9 环境下的 wheel 缺少 `zai/__init__.py` 文件，导致 `import zai` 返回空模块，必须用 `from zai._client import ZhipuAiClient` 这种私有模块导入。这是上游打包缺陷（官方声明支持 `>=3.8`，但实际 `<3.10` 的 wheel 不完整）。Python 3.10+ 的 wheel 包含完整的 `__init__.py`，可直接 `from zai import ZhipuAiClient`。
 
 ### 没有任何 API key 能用吗？
 

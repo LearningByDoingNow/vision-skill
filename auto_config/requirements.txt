@@ -1,9 +1,12 @@
 # ==============================================================================
 # vision skill 依赖 — 一键安装: pip install -r requirements.txt
+#
+# 要求 Python >= 3.10。zai-sdk 在 Python 3.9 下 wheel 缺少 __init__.py，
+# 导致 import zai 失败，详见 README 常见问题。
 # ==============================================================================
 
 # ----- 多模态 API 厂商 (按需安装，使用哪个厂商就装哪个) -----
-zai-sdk           # 智谱 GLM (glm-4.6v)
+zai-sdk           # 智谱 GLM (glm-4.6v)，需 Python >= 3.10
 # openai           # OpenAI (gpt-4o)
 # anthropic        # Anthropic (claude-sonnet-4-6)
 # google-genai     # Google (gemini-2.5-flash)

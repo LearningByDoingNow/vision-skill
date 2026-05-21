@@ -423,19 +423,23 @@ PROVIDER_REGISTRY: list[tuple[ProviderInfo, type[BaseProvider]]] = [
 
 def _detect_provider(preferred: Optional[str] = None
                      ) -> tuple[str, BaseProvider, str] | None:
-    """检测可用厂商，返回 (name, instance, default_model) 或 None。"""
-    # 用户指定厂商
+    """检测可用厂商，返回 (name, instance, default_model) 或 None。
+
+    优先使用 preferred 指定的厂商；若不可用则自动降级到其他已配置厂商；
+    全部不可用时返回 None（触发 OCR 兜底）。
+    """
+    # 用户指定厂商：可用则直接用，不可用则降级到自动检测
     if preferred:
         for info, cls in PROVIDER_REGISTRY:
             if info.name == preferred:
                 key = os.environ.get(info.env_var)
-                if not key:
-                    raise RuntimeError(
-                        f"{info.label} 的 {info.env_var} 未设置。"
-                        f"请 export {info.env_var}=<your-key>"
-                    )
-                return (info.name, cls(key), info.default_model)
-        raise RuntimeError(f"未知厂商: {preferred}。可选: {_provider_names()}")
+                if key:
+                    return (info.name, cls(key), info.default_model)
+                print(f"[vision] 指定厂商 {info.label} 未配置 {info.env_var}，降级自动检测",
+                      file=sys.stderr)
+                break
+        else:
+            print(f"[vision] 未知厂商: {preferred}，降级自动检测", file=sys.stderr)
 
     # 自动检测第一个有 key 的厂商
     for info, cls in PROVIDER_REGISTRY:
@@ -444,7 +448,7 @@ def _detect_provider(preferred: Optional[str] = None
             try:
                 return (info.name, cls(key), info.default_model)
             except Exception as e:
-                print(f"[警告] {info.label} 初始化失败: {e}", file=sys.stderr)
+                print(f"[vision] {info.label} 初始化失败: {e}", file=sys.stderr)
                 continue
 
     return None

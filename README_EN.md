@@ -75,6 +75,8 @@ Before you start, here are the three things you need to decide:
 ### macOS / Linux
 
 ```bash
+# Prerequisite: Python >= 3.10 (zai-sdk wheel lacks __init__.py below this version, see FAQ)
+
 # 1. Clone to project or globally
 git clone https://github.com/<user>/vision-skill.git .claude/skills/vision-skill-skill   # project-level
 git clone https://github.com/<user>/vision-skill.git ~/.claude/skills/vision-skill  # global
@@ -452,6 +454,10 @@ export VISION_MODEL="gpt-4o-mini"
 ---
 
 ## FAQ
+
+### Why Python >= 3.10?
+
+`zai-sdk` (Zhipu's official SDK) has a packaging issue: wheels built for Python 3.9 lack `zai/__init__.py`, making `import zai` return an empty namespace module. The workaround (`from zai._client import ZhipuAiClient`) relies on private internals. Python 3.10+ wheels include the full `__init__.py`, enabling the clean import `from zai import ZhipuAiClient`. This is an upstream defect — the package declares `>=3.8` support but 3.9 wheels are incomplete.
 
 ### Can I use this without any API key?
 
