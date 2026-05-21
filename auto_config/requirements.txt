@@ -4,9 +4,9 @@
 
 # ----- 多模态 API 厂商 (按需安装，使用哪个厂商就装哪个) -----
 zai              # 智谱 GLM (glm-4.6v)
-openai           # OpenAI (gpt-4o)
-anthropic        # Anthropic (claude-sonnet-4-6)
-google-genai     # Google (gemini-2.5-flash)
+# openai           # OpenAI (gpt-4o)
+# anthropic        # Anthropic (claude-sonnet-4-6)
+# google-genai     # Google (gemini-2.5-flash)
 
 # ----- 远程 URL 下载 -----
 requests         # Anthropic/Google 处理远程图片时需要

@@ -56,41 +56,80 @@
 
 ---
 
+## 配置概览
+
+开始之前，了解你需要做的三件事，每件事都有多种方式可选：
+
+| 事项 | 选项 |
+|------|------|
+| **安装位置** | ① 项目级（`.claude/skills/vision`） ② 全局（`~/.claude/skills/vision`） |
+| **依赖安装** | ① `bash install.sh`（自动检测 pip/uv） ② 手动 `pip install -r auto_config/requirements.txt` ③ 按需只装一个厂商的 SDK |
+| **API key** | ① 环境变量 `export`（临时） ② 项目级 `settings.local.json`（推荐） ③ 全局 `~/.claude/settings.json` |
+
+> **`install.sh` 不是必须的**——它只是一个便利脚本。如果你熟悉 Python，直接 `pip install` 即可。Windows 用户请优先手动安装。
+
+---
+
 ## 快速开始
 
-```bash
-# 1. 安装依赖（一键脚本）
-bash install.sh
-# 或手动：pip install -r requirements.txt
+### macOS / Linux
 
-# 2. 配置任意一个 API key
+```bash
+# 1. 克隆到项目或全局
+git clone https://github.com/<user>/vision-skill.git .claude/skills/vision   # 项目级
+git clone https://github.com/<user>/vision-skill.git ~/.claude/skills/vision  # 全局
+
+# 2. 安装依赖
+pip install -r auto_config/requirements.txt
+# 或 bash install.sh（自动检测 pip/uv）
+
+# 3. 配置任意一个 API key
 export ZHIPU_API_KEY="your-key-here"
 
-# 3. 在 Claude Code 中使用
+# 4. 在 Claude Code 中使用
 #   - 直接拖入图片/视频文件
 #   - 输入 /vision
 #   - 粘贴图片/视频 URL
 ```
 
+### Windows
+
+`install.sh` 依赖 bash 环境，Windows 用户直接手动操作即可：
+
+```powershell
+# 1. 克隆到项目或全局
+git clone https://github.com/<user>/vision-skill.git .claude/skills/vision
+
+# 2. 安装 Python 依赖（PowerShell / CMD 均可）
+pip install -r auto_config/requirements.txt
+
+# 3. 配置 API key（三选一，见下方"配置 API Key"章节）
+set ZHIPU_API_KEY=your-key-here          # CMD 临时
+$env:ZHIPU_API_KEY = "your-key-here"     # PowerShell 临时
+# 或写入 settings.json（推荐，持久生效）
+```
+
 ---
 
-## 依赖安装
+## 安装
 
-### 一键安装
+### 一键安装依赖（macOS / Linux）
 
 ```bash
 bash install.sh
 ```
 
-或直接使用 pip：
+脚本会自动检测 pip/uv，安装 `auto_config/requirements.txt` 中的全部依赖。
+
+### Windows / 手动安装
 
 ```bash
-pip install -r requirements.txt
+pip install -r auto_config/requirements.txt
 ```
 
 ### 按需安装
 
-**如果你只用某一个厂商**，可以只装对应的 SDK：
+如果只用某一个厂商，可以只装对应的 SDK：
 
 ```bash
 # 智谱
@@ -108,10 +147,10 @@ pip install google-genai
 
 ### 系统依赖（可选）
 
-| 工具 | 用途 | 安装方式 |
-|------|------|----------|
-| `ffmpeg` | 本地视频关键帧提取 | `brew install ffmpeg` |
-| `tesseract` | pytesseract OCR 引擎 | `brew install tesseract` |
+| 工具 | 用途 | macOS | Linux | Windows |
+|------|------|-------|-------|---------|
+| `ffmpeg` | 本地视频关键帧提取 | `brew install ffmpeg` | `apt install ffmpeg` | `winget install ffmpeg` |
+| `tesseract` | pytesseract OCR 引擎 | `brew install tesseract` | `apt install tesseract-ocr` | `winget install tesseract-ocr` |
 
 > `easyocr` 不依赖系统工具，离线可用，首次运行自动下载模型（~200MB）。
 
@@ -119,9 +158,9 @@ pip install google-genai
 
 ## 配置 API Key
 
-有三种配置方式，优先级从高到低：
+三种配置方式，任选其一即可：
 
-### 方式一：环境变量（推荐）
+### 方式一：环境变量（临时生效）
 
 ```bash
 export ZHIPU_API_KEY="your-key"     # 智谱 GLM
@@ -130,9 +169,11 @@ export ANTHROPIC_API_KEY="your-key" # Anthropic Claude
 export GOOGLE_API_KEY="your-key"    # Google Gemini
 ```
 
-### 方式二：settings.local.json
+终端关闭后失效，适合临时使用或测试。
 
-写入 `.claude/settings.local.json` 的 `env` 字段（此文件已在 `.gitignore` 中）：
+### 方式二：项目级 settings.local.json（推荐）
+
+写入项目 `.claude/settings.local.json` 的 `env` 字段（已在 `.gitignore`，不会提交）：
 
 ```json
 {
@@ -143,7 +184,13 @@ export GOOGLE_API_KEY="your-key"    # Google Gemini
 }
 ```
 
-### 方式三：自定义模型与超时（可选）
+仅当前项目生效，不会泄露到其他项目或 git 仓库。
+
+### 方式三：全局 settings.json
+
+写入 `~/.claude/settings.json` 的 `env` 字段，格式同方式二。所有项目共享，适合个人常用配置。
+
+### 可选配置
 
 ```bash
 export VISION_MODEL="gpt-4o-mini"   # 覆盖厂商默认模型
@@ -171,22 +218,22 @@ Skill 会：
 
 ```bash
 # 图片描述（含 TUI 临时文件）
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py photo.jpg
+python3 scripts/vision_describe.py photo.jpg
 
 # 多个文件/URL 依次描述
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py \
+python3 scripts/vision_describe.py \
   img1.jpg img2.png "https://example.com/photo.jpg"
 
 # 指定厂商和模型
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py photo.jpg \
+python3 scripts/vision_describe.py photo.jpg \
   --provider openai --model gpt-4o-mini
 
 # 自定义描述要求
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py screenshot.png \
+python3 scripts/vision_describe.py screenshot.png \
   --prompt "重点关注代码部分，逐行抄录"
 
 # 视频描述（更多关键帧）
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py video.mp4 \
+python3 scripts/vision_describe.py video.mp4 \
   --max-frames 10
 
 # 管道输入（stdin）
@@ -194,11 +241,11 @@ cat screenshot.png | .venv/bin/python \
   .claude/skills/vision/scripts/vision_describe.py -
 
 # 远程 URL
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py \
+python3 scripts/vision_describe.py \
   "https://example.com/photo.jpg"
 
 # 查看厂商状态
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py --list-providers
+python3 scripts/vision_describe.py --list-providers
 ```
 
 ---

@@ -1,8 +1,8 @@
 ---
-name: vision
+name: vision-skill
 description: 多厂商多模态图片/视频描述，无 API key 时自动 OCR 兜底。让纯文本模型理解视觉内容。
 when_to_use: 用户附带图片(png/jpg/gif/webp/bmp)、视频(mp4/avi/mov/mkv/webm)、图片/视频URL、要求描述图片/截图/照片/视频、输入 /vision、消息中出现 [Image # 或 [Video #
-allowed-tools: Bash(.venv/bin/python *)
+allowed-tools: Bash(python3 *)
 ---
 
 ## ⚠️ 强制规则
@@ -41,18 +41,18 @@ fi
 
 ## 环境准备
 
-若项目根目录没有 `.venv/`，先引导用户运行安装脚本：
+确保 Python 3.10+ 可用，且已安装所需依赖：
 
 ```bash
-bash install.sh
+pip install -r ${CLAUDE_SKILL_DIR}/auto_config/requirements.txt
 ```
 
-（等同于 `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`）
+也可以参考 `install.sh` 一键完成。
 
 ## 执行命令
 
 ```bash
-.venv/bin/python ${CLAUDE_SKILL_DIR}/scripts/vision_describe.py $ARGUMENTS
+python3 ${CLAUDE_SKILL_DIR}/scripts/vision_describe.py $ARGUMENTS
 ```
 
 行为：
@@ -84,8 +84,9 @@ bash install.sh
 
 若环境检测显示所有 API key 均为"未配置"，主动提示：
 1. 当前只能使用 OCR 提取图片文字，无法理解场景/物体/人物/色彩等
-2. 配置任一 API key 即可获得完整的视觉理解能力：
+2. 配置任一 API key 即可获得完整的视觉理解能力，三种方式任选：
 
+**方式一：环境变量（临时生效，终端关闭即失效）**
 ```
 export ZHIPU_API_KEY="your-key"     # 智谱 GLM (glm-4.6v)
 export OPENAI_API_KEY="your-key"    # OpenAI GPT-4o
@@ -94,8 +95,16 @@ export GOOGLE_API_KEY="your-key"    # Google Gemini
 export VISION_MODEL="gpt-4o-mini"   # （可选）覆盖默认模型
 ```
 
-3. 也可将 key 和 model 写入 `.claude/settings.local.json` 的 `env` 字段
-4. 一键安装依赖：`pip install -r .claude/skills/vision/auto_config/requirements.txt`
+**方式二：项目级 settings（仅当前项目生效，可提交到团队共享）**
+写入项目 `.claude/settings.local.json` 的 `env` 字段（此文件已在 `.gitignore`，不会提交）：
+```json
+{ "env": { "ZHIPU_API_KEY": "your-key", "VISION_MODEL": "glm-4.6v" } }
+```
+
+**方式三：全局 settings（所有项目生效）**
+写入 `~/.claude/settings.json` 的 `env` 字段，格式同方式二。
+
+3. 一键安装依赖：`pip install -r ${CLAUDE_SKILL_DIR}/auto_config/requirements.txt`
 
 ## 约束
 

@@ -56,36 +56,75 @@
 
 ---
 
+## Setup Overview
+
+Before you start, here are the three things you need to decide:
+
+| Task | Options |
+|------|--------|
+| **Install location** | ① Project-level (`.claude/skills/vision`) ② Global (`~/.claude/skills/vision`) |
+| **Dependencies** | ① `bash install.sh` (auto-detects pip/uv) ② Manual `pip install -r auto_config/requirements.txt` ③ Single-provider SDK only |
+| **API key** | ① Env var `export` (temporary) ② Project `settings.local.json` (recommended) ③ Global `~/.claude/settings.json` |
+
+> **`install.sh` is optional** — it's just a convenience wrapper. If you're comfortable with Python, use `pip install` directly. Windows users should prefer manual install.
+
+---
+
 ## Quick Start
 
-```bash
-# 1. Install dependencies (one-click script)
-bash install.sh
-# Or manually: pip install -r requirements.txt
+### macOS / Linux
 
-# 2. Configure at least one API key
+```bash
+# 1. Clone to project or globally
+git clone https://github.com/<user>/vision-skill.git .claude/skills/vision   # project-level
+git clone https://github.com/<user>/vision-skill.git ~/.claude/skills/vision  # global
+
+# 2. Install dependencies
+pip install -r auto_config/requirements.txt
+# Or: bash install.sh (auto-detects pip/uv)
+
+# 3. Configure at least one API key
 export ZHIPU_API_KEY="your-key-here"
 
-# 3. Use in Claude Code
+# 4. Use in Claude Code
 #   - Drag/drop or paste an image in chat
 #   - Type /vision
 #   - Paste an image/video URL
 ```
 
+### Windows
+
+`install.sh` requires bash — Windows users can install directly:
+
+```powershell
+# 1. Clone to project or globally
+git clone https://github.com/<user>/vision-skill.git .claude/skills/vision
+
+# 2. Install Python dependencies (PowerShell / CMD)
+pip install -r auto_config/requirements.txt
+
+# 3. Configure API key (see "API Key Configuration" below)
+set ZHIPU_API_KEY=your-key-here          # CMD (temporary)
+$env:ZHIPU_API_KEY = "your-key-here"     # PowerShell (temporary)
+# Or write to settings.json (recommended, persistent)
+```
+
 ---
 
-## Dependencies
+## Installation
 
-### One-Line Install
+### One-Line Install (macOS / Linux)
 
 ```bash
 bash install.sh
 ```
 
-Or directly with pip:
+Auto-detects pip/uv, installs all deps from `auto_config/requirements.txt`.
+
+### Windows / Manual Install
 
 ```bash
-pip install -r requirements.txt
+pip install -r auto_config/requirements.txt
 ```
 
 ### Per-Provider Install
@@ -108,10 +147,10 @@ pip install google-genai
 
 ### System Dependencies (Optional)
 
-| Tool | Purpose | Install |
-|------|---------|---------|
-| `ffmpeg` | Local video keyframe extraction | `brew install ffmpeg` |
-| `tesseract` | pytesseract OCR engine | `brew install tesseract` |
+| Tool | Purpose | macOS | Linux | Windows |
+|------|---------|-------|-------|---------|
+| `ffmpeg` | Local video keyframe extraction | `brew install ffmpeg` | `apt install ffmpeg` | `winget install ffmpeg` |
+| `tesseract` | pytesseract OCR engine | `brew install tesseract` | `apt install tesseract-ocr` | `winget install tesseract-ocr` |
 
 > `easyocr` requires no system tools, works offline, and auto-downloads models (~200MB) on first run.
 
@@ -119,9 +158,9 @@ pip install google-genai
 
 ## API Key Configuration
 
-Three configuration methods (highest priority first):
+Three methods, pick any:
 
-### Method 1: Environment Variables (Recommended)
+### Method 1: Environment Variables (temporary)
 
 ```bash
 export ZHIPU_API_KEY="your-key"     # Zhipu GLM
@@ -130,9 +169,11 @@ export ANTHROPIC_API_KEY="your-key" # Anthropic Claude
 export GOOGLE_API_KEY="your-key"    # Google Gemini
 ```
 
-### Method 2: settings.local.json
+Expires when the terminal closes. Good for testing.
 
-Add to `.claude/settings.local.json` under the `env` field (this file is gitignored):
+### Method 2: Project-level settings.local.json (recommended)
+
+Add to `<project>/.claude/settings.local.json` under the `env` field (gitignored):
 
 ```json
 {
@@ -143,7 +184,13 @@ Add to `.claude/settings.local.json` under the `env` field (this file is gitigno
 }
 ```
 
-### Method 3: Custom Model & Timeout (Optional)
+Scoped to the current project only.
+
+### Method 3: Global settings.json
+
+Add to `~/.claude/settings.json` under the `env` field, same format as Method 2. Applies to all projects.
+
+### Optional Settings
 
 ```bash
 export VISION_MODEL="gpt-4o-mini"   # Override provider default model
@@ -171,22 +218,22 @@ The skill will:
 
 ```bash
 # Image description (including TUI temp files)
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py photo.jpg
+python3 scripts/vision_describe.py photo.jpg
 
 # Multiple files/URLs
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py \
+python3 scripts/vision_describe.py \
   img1.jpg img2.png "https://example.com/photo.jpg"
 
 # Specify provider and model
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py photo.jpg \
+python3 scripts/vision_describe.py photo.jpg \
   --provider openai --model gpt-4o-mini
 
 # Custom description prompt
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py screenshot.png \
+python3 scripts/vision_describe.py screenshot.png \
   --prompt "Focus on code content, transcribe line by line"
 
 # Video description (more keyframes)
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py video.mp4 \
+python3 scripts/vision_describe.py video.mp4 \
   --max-frames 10
 
 # Stdin pipe input
@@ -194,11 +241,11 @@ cat screenshot.png | .venv/bin/python \
   .claude/skills/vision/scripts/vision_describe.py -
 
 # Remote URL
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py \
+python3 scripts/vision_describe.py \
   "https://example.com/photo.jpg"
 
 # List provider status
-.venv/bin/python .claude/skills/vision/scripts/vision_describe.py --list-providers
+python3 scripts/vision_describe.py --list-providers
 ```
 
 ---
