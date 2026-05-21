@@ -7,7 +7,7 @@ description: >
   image/video URLs, types /vision, or when [Image #N] / [Video #N] appears in the chat.
   Do NOT try to Read image files directly — you cannot parse binary data. Run the vision
   script instead. Cross-platform: works on Claude Code, OpenAI Codex, OpenCode, and OpenClaw.
-when_to_use: 用户附带图片(png/jpg/gif/webp/bmp)、视频(mp4/avi/mov/mkv/webm)、图片/视频URL、要求描述图片/截图/照片/视频、输入 /vision、消息中出现 [Image # 或 [Video #
+when_to_use: 用户附带图片(png/jpg/gif/webp/bmp)、视频(mp4/avi/mov/mkv/webm)、图片/视频URL、要求描述图片/截图/照片/视频、输入 /vision、消息中出现 [Image#N] 或 [Video#N]
 allowed-tools: Bash(python *)
 ---
 
