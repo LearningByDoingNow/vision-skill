@@ -39,7 +39,7 @@
 | 🎬 Video Description | Keyframe extraction → per-frame description → summary |
 | 🖼️ TUI Paste/Drag | Paste images directly in chat; **temp files without extensions identified via magic bytes** |
 | 📦 Batch Processing | Pass multiple images/videos/URLs at once, described sequentially with separators |
-| 🔀 Multi-Provider Auto-Detect | Auto-selects first available provider: ZHIPU → OpenAI → Anthropic → Google |
+| 🔀 Multi-Provider Auto-Detect | Auto-selects first available provider: ZHIPU → MiMo → OpenAI → Anthropic → Google |
 | 🔤 OCR Fallback | No API key → auto-degrade: easyocr → pytesseract → basic metadata |
 | 🌐 Remote URLs | Pass image/video URLs directly, no download needed |
 | 📥 Stdin Input | Pipe support: `cat img.png \| ... -` |
@@ -53,6 +53,7 @@
 | OpenAI | `OPENAI_API_KEY` | `gpt-4o` |
 | Anthropic | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
 | Google | `GOOGLE_API_KEY` | `gemini-2.5-flash` |
+| Xiaomi MiMo | `MIMO_API_KEY` | `mimo-v2.5` |
 
 ---
 
@@ -169,6 +170,7 @@ export ZHIPU_API_KEY="your-key"     # Zhipu GLM
 export OPENAI_API_KEY="your-key"    # OpenAI GPT-4o
 export ANTHROPIC_API_KEY="your-key" # Anthropic Claude
 export GOOGLE_API_KEY="your-key"    # Google Gemini
+export MIMO_API_KEY="your-key"      # Xiaomi MiMo
 ```
 
 Expires when the terminal closes. Good for testing.
@@ -390,6 +392,7 @@ PROVIDER_REGISTRY: list[tuple[ProviderInfo, type[BaseProvider]]] = [
     (ProviderInfo("openai",   "OPENAI_API_KEY",    "gpt-4o",           "OpenAI GPT-4o"),     OpenAIProvider),
     (ProviderInfo("anthropic","ANTHROPIC_API_KEY", "claude-sonnet-4-6","Anthropic Claude"),  AnthropicProvider),
     (ProviderInfo("google",   "GOOGLE_API_KEY",    "gemini-2.5-flash", "Google Gemini"),     GoogleProvider),
+    (ProviderInfo("mimo",     "MIMO_API_KEY",      "mimo-v2.5",        "Xiaomi MiMo"),      MiMoProvider),
     # ↓ New provider
     (ProviderInfo("myvendor", "MY_API_KEY",        "my-model-v1",      "My Vendor"),         MyProvider),
 ]

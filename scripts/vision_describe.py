@@ -6,6 +6,7 @@
   OpenAI:       OPENAI_API_KEY    — gpt-4o / gpt-4o-mini
   Anthropic:    ANTHROPIC_API_KEY — claude-sonnet-4-6 / claude-haiku-4-5
   Google:       GOOGLE_API_KEY    — gemini-2.5-flash / gemini-2.5-pro
+  小米 MiMo:   MIMO_API_KEY      — mimo-v2.5（官方云 API）
 
 无 API key → OCR 兜底（easyocr > pytesseract > Pillow 基础信息）。
 依赖：pip install zai-sdk openai anthropic google-genai easyocr pillow requests
@@ -205,7 +206,8 @@ OCR_FALLBACK_NOTE = (
     "  export ZHIPU_API_KEY=\"your-key\"    # 智谱 GLM\n"
     "  export OPENAI_API_KEY=\"your-key\"    # OpenAI GPT-4o\n"
     "  export ANTHROPIC_API_KEY=\"your-key\" # Anthropic Claude\n"
-    "  export GOOGLE_API_KEY=\"your-key\"    # Google Gemini\n\n"
+    "  export GOOGLE_API_KEY=\"your-key\"    # Google Gemini\n"
+    "  export MIMO_API_KEY=\"your-key\"      # 小米 MiMo\n\n"
     "OCR 增强（可选）: pip install easyocr"
 )
 
@@ -401,6 +403,41 @@ class GoogleProvider(BaseProvider):
         return resp.text
 
 
+class MiMoProvider(BaseProvider):
+    """小米 MiMo 视觉语言模型 (OpenAI 兼容 API)。
+
+    官方云 API，地址: https://api.xiaomimimo.com/v1
+    配置方式：
+      - MIMO_API_KEY: API 密钥（必填）
+    """
+
+    def __init__(self, api_key: str):
+        from openai import OpenAI
+        self._client = OpenAI(
+            api_key=api_key,
+            base_url="https://api.xiaomimimo.com/v1",
+            timeout=_API_TIMEOUT,
+        )
+
+    def describe_image(self, image_url: str, prompt: str, model: str) -> str:
+        content: list[dict] = [{"type": "text", "text": prompt}]
+        if image_url:
+            content.insert(0, {"type": "image_url", "image_url": {"url": image_url}})
+        resp = self._client.chat.completions.create(
+            model=model, messages=[{"role": "user", "content": content}],
+            temperature=0.1,
+        )
+        return resp.choices[0].message.content
+
+    def describe_text(self, text: str, prompt: str, model: str) -> str:
+        resp = self._client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt + "\n\n" + text}],
+            temperature=0.3,
+        )
+        return resp.choices[0].message.content
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # 厂商注册表
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -415,6 +452,7 @@ class ProviderInfo:
 
 PROVIDER_REGISTRY: list[tuple[ProviderInfo, type[BaseProvider]]] = [
     (ProviderInfo("zhipu",    "ZHIPU_API_KEY",    "glm-4.6v",            "智谱 GLM"),         ZhipuProvider),
+    (ProviderInfo("mimo",     "MIMO_API_KEY",      "mimo-v2.5",           "小米 MiMo"),        MiMoProvider),
     (ProviderInfo("openai",   "OPENAI_API_KEY",    "gpt-4o",              "OpenAI GPT-4o"),     OpenAIProvider),
     (ProviderInfo("anthropic","ANTHROPIC_API_KEY", "claude-sonnet-4-6",   "Anthropic Claude"),  AnthropicProvider),
     (ProviderInfo("google",   "GOOGLE_API_KEY",    "gemini-2.5-flash",    "Google Gemini"),     GoogleProvider),

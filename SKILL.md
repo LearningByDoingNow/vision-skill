@@ -23,6 +23,16 @@ allowed-tools: Bash(python *)
 行为：自动检测已配置 API key 的厂商 → 调用视觉模型 → 输出描述。无 key 时图片自动 OCR 兜底，视频则提示配置。
 超时：默认 90s，可通过 `VISION_TIMEOUT=120` 环境变量调整。
 
+## 支持的厂商
+
+| 厂商 | 环境变量 | 默认模型 |
+|------|----------|----------|
+| 智谱 GLM | `ZHIPU_API_KEY` | glm-4.6v |
+| OpenAI | `OPENAI_API_KEY` | gpt-4o |
+| Anthropic | `ANTHROPIC_API_KEY` | claude-sonnet-4-6 |
+| Google | `GOOGLE_API_KEY` | gemini-2.5-flash |
+| 小米 MiMo | `MIMO_API_KEY` | mimo-v2.5 |
+
 ## 无 API key 时引导
 
 所有厂商均未配置时，主动提示用户（三种方式任选）：

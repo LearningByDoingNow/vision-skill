@@ -39,7 +39,7 @@
 | 🎬 视频描述 | 关键帧提取 → 逐帧描述 → 汇总总结 |
 | 🖼️ TUI 粘贴/拖入 | 聊天框直接粘贴图片，**无扩展名的临时文件通过文件头魔数自动识别** |
 | 📦 多文件批处理 | 一次传入多个图片/视频/URL，逐个描述，带序号分隔 |
-| 🔀 多厂商自动切换 | 按 `ZHIPU` → `OpenAI` → `Anthropic` → `Google` 顺序自动检测 |
+| 🔀 多厂商自动切换 | 按 `ZHIPU` → `MiMo` → `OpenAI` → `Anthropic` → `Google` 顺序自动检测 |
 | 🔤 OCR 兜底 | 无 API key 时自动降级：easyocr → pytesseract → 基础元信息 |
 | 🌐 远程 URL | 直接传入图片/视频 URL，无需下载 |
 | 📥 标准输入 | 支持管道输入 `cat img.png \| ... -` |
@@ -53,6 +53,7 @@
 | OpenAI | `OPENAI_API_KEY` | `gpt-4o` |
 | Anthropic | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6` |
 | Google | `GOOGLE_API_KEY` | `gemini-2.5-flash` |
+| 小米 MiMo | `MIMO_API_KEY` | `mimo-v2.5` |
 
 ---
 
@@ -169,6 +170,7 @@ export ZHIPU_API_KEY="your-key"     # 智谱 GLM
 export OPENAI_API_KEY="your-key"    # OpenAI GPT-4o
 export ANTHROPIC_API_KEY="your-key" # Anthropic Claude
 export GOOGLE_API_KEY="your-key"    # Google Gemini
+export MIMO_API_KEY="your-key"      # 小米 MiMo
 ```
 
 终端关闭后失效，适合临时使用或测试。
@@ -390,6 +392,7 @@ PROVIDER_REGISTRY: list[tuple[ProviderInfo, type[BaseProvider]]] = [
     (ProviderInfo("openai",   "OPENAI_API_KEY",    "gpt-4o",           "OpenAI GPT-4o"),    OpenAIProvider),
     (ProviderInfo("anthropic","ANTHROPIC_API_KEY", "claude-sonnet-4-6","Anthropic Claude"), AnthropicProvider),
     (ProviderInfo("google",   "GOOGLE_API_KEY",    "gemini-2.5-flash", "Google Gemini"),    GoogleProvider),
+    (ProviderInfo("mimo",     "MIMO_API_KEY",      "mimo-v2.5",        "小米 MiMo"),        MiMoProvider),
     # ↓ 新增厂商
     (ProviderInfo("myvendor", "MY_API_KEY",        "my-model-v1",      "My Vendor"),        MyProvider),
 ]
